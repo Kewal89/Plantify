@@ -1,56 +1,62 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import React from "react"
+import * as Font from "expo-font"
+import { useFonts } from "expo-font"
+import { Stack } from "expo-router"
+import { useEffect } from "react" // @ts-ignore
+import HeaderIcon from "../assets/header.png" // @ts-ignore
+import NotiIcon from "../assets/noti.png" // @ts-ignore
+import HamIcon from "../assets/ham.png"
+import { Image, View } from "react-native"
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+const Layout = () => {
+  const [fontsLoaded] = useFonts({
+    PhilosopherRegular: require("../assets/fonts/Philosopher-Regular.ttf"),
+  })
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    const loadFonts = async () => {
+      try {
+        await Font.loadAsync({
+          PhilosopherRegular: require("../assets/fonts/Philosopher-Regular.ttf"),
+        })
+      } catch (e) {
+        console.warn(e)
+      }
     }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  }, [])
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
-  );
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{
+          headerTitle: "Plantify",
+          headerLeft: () => <Image source={HeaderIcon} style={{ marginRight: 14 }} />,
+          headerRight: () => (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Image source={NotiIcon} style={{ marginRight: 14 }} />
+              <Image source={HamIcon} style={{ marginRight: 14 }} />
+            </View>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="metadata/[id]"
+        options={{
+          headerStyle: { backgroundColor: "#9CE5CB" },
+          headerShadowVisible: false,
+          headerTitle: "Plantify",
+          headerLeft: () => <Image source={HeaderIcon} style={{ marginRight: 14 }} />,
+          headerRight: () => (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Image source={NotiIcon} style={{ marginRight: 14 }} />
+              <Image source={HamIcon} style={{ marginRight: 14 }} />
+            </View>
+          ),
+        }}
+      />
+    </Stack>
+  )
 }
+
+export default Layout
